@@ -1,28 +1,35 @@
 #!/bin/bash
 
 # Solicitar usuário e senha
+read -p "Digite o nome do banco de dados: " DB_NAME
 read -p "Digite o nome do usuário do banco de dados: " DB_USER
-read -sp "Digite a senha do banco de dados: " DB_PASS
-read -sp "Digite a senha novamente para confirmar: "DB_PSS2"
-echo
-if [ -z "$DB_PASS" != "$DB_PASS2"]; then
-    echo "Senhas não correspondem..."
-    exit 1
-if
+
+# Solicitar e validar a senha do banco de dados
+while true; do
+    read -sp "Digite a senha do banco de dados: " DB_PASS
+    echo
+    read -sp "Confirme a senha do banco de dados: " DB_PASS_CONFIRM
+    echo
+    if [ "$DB_PASS" == "$DB_PASS_CONFIRM" ]; then
+        break
+    else
+        echo "As senhas não coincidem. Tente novamente."
+    fi
+done
+
 read -p "Digite o nome do domínio do servidor: " SERVER_NAME
 
 # Arquivo de log
 LOG_FILE="glpi_install_logs"
 touch $LOG_FILE
 chmod 600 $LOG_FILE  # Permissões restritas para o arquivo de log
-
 # Função para registrar logs
 log() {
     echo "$1" | tee -a $LOG_FILE
 }
 
 # Validação de entradas
-if [ -z "$DB_USER" ] || [ -z "$DB_PASS" ] || [ -z "$SERVER_NAME" ]; then
+if [ -z "$DB_NAME" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASS" ] || [ -z "$SERVER_NAME" ]; then
     log "Erro: Todos os campos devem ser preenchidos."
     exit 1
 fi
@@ -102,7 +109,6 @@ fi
 log "Iniciando e habilitando MariaDB..."
 systemctl start mariadb | tee -a $LOG_FILE
 systemctl enable mariadb | tee -a $LOG_FILE
-
 # Criar base de dados e usuário
 log "Configurando banco de dados..."
 if ! systemctl is-active --quiet mariadb; then
@@ -110,10 +116,10 @@ if ! systemctl is-active --quiet mariadb; then
     exit 1
 fi
 
-sudo mysql -e "CREATE DATABASE glpi CHARACTER SET utf8" | tee -a $LOG_FILE
-sudo mysql -e "CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS'" | tee -a $LOG_FILE
-sudo mysql -e "GRANT ALL PRIVILEGES ON glpi.* TO '$DB_USER'@'localhost' WITH GRANT OPTION" | tee -a $LOG_FILE
-sudo mysql -e "FLUSH PRIVILEGES;" | tee -a $LOG_FILE
+mysql -e "CREATE DATABASE $DB_NAME CHARACTER SET utf8" | tee -a $LOG_FILE
+mysql -e "CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS'" | tee -a $LOG_FILE
+mysql -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost' WITH GRANT OPTION" | tee -a $LOG_FILE
+mysql -e "FLUSH PRIVILEGES;" | tee -a $LOG_FILE
 
 # Habilitar suporte a timezones no MariaDB
 log "Habilitando suporte a timezones no MariaDB..."
@@ -150,7 +156,6 @@ EOF
 # Habilitar módulo rewrite e configuração GLPI
 log "Habilitando módulo rewrite do Apache..."
 a2enmod rewrite | tee -a $LOG_FILE
-
 log "Habilitando configuração para o GLPI..."
 a2enconf glpi.conf | tee -a $LOG_FILE
 
