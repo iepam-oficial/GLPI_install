@@ -1,13 +1,11 @@
-Dê permissão de execução ao script:
+Dê permissão de execução ao script.
 Para evitar erros execute o script no modo root
 
-Para entrar no modo root execute o script: sudo su
+Para entrar no modo root execute o comando "sudo su" e digite a senha do usuário root.
 
-Execute o script:
-chmod +x setup.sh
+Para conceder permissão de execução, execute o script: chmod +x setup.sh
 
-Execute o script:
-./setup.sh
+para rodar a instalação execute o script: ./setup.sh
 
 Exemplo de como preencher as variaveis de setup
   Digite o nome do banco de dados: glpi_db
