@@ -9,9 +9,9 @@ para rodar a instalação execute o script: ./setup.sh
 
 Exemplo de como preencher as variaveis de setup.
 
-Digite o nome do usuário do banco de dados: glpi_user
+Digite o nome do usuário do banco de dados: Fulano
 
-Digite a senha do banco de dados: MyStr0ngP@ssw0rd
+Digite a senha do banco de dados: minhasenhasecreta
 
 Digite o nome do domínio do servidor: 10.80.0.139
 
