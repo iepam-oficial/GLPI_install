@@ -101,10 +101,10 @@ if ! systemctl is-active --quiet mariadb; then
     exit 1
 fi
 
-mysql -e "CREATE DATABASE glpi CHARACTER SET utf8" | tee -a $LOG_FILE
-mysql -e "CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS'" | tee -a $LOG_FILE
-mysql -e "GRANT ALL PRIVILEGES ON glpi.* TO '$DB_USER'@'localhost' WITH GRANT OPTION" | tee -a $LOG_FILE
-mysql -e "FLUSH PRIVILEGES;" | tee -a $LOG_FILE
+sudo mysql -e "CREATE DATABASE glpi CHARACTER SET utf8" | tee -a $LOG_FILE
+sudo mysql -e "CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS'" | tee -a $LOG_FILE
+sudo mysql -e "GRANT ALL PRIVILEGES ON glpi.* TO '$DB_USER'@'localhost' WITH GRANT OPTION" | tee -a $LOG_FILE
+sudo mysql -e "FLUSH PRIVILEGES;" | tee -a $LOG_FILE
 
 log "Habilitando suporte a timezones no MariaDB..."
 mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql mysql | tee -a $LOG_FILE
